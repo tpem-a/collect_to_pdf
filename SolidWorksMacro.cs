@@ -102,9 +102,11 @@ namespace project
             for (i = 0; i < vChildComp.Length; i++)
             {
                 swChildComp = (Component2)vChildComp[i];
-                
 
+
+                ///debug.print( swChildComp.getb);
                 array_drw(swChildComp.GetPathName());
+                Debug.Print(" +!!!+ "+swChildComp.GetType());
 
                 ///TraverseComponentFeatures(swChildComp, nLevel);
                 TraverseComponent(swChildComp, nLevel + 1);
@@ -121,23 +123,25 @@ namespace project
         
         public void array_drw(string pth)
         {
-            if (!draws.Contains(pth))
+            if (!draws.Contains(pth.Remove(pth.Length - 3, 3) + "DRW"))
             {
-                draws.Add(pth.Remove(pth.Length - 3, 3) + "DRW");
+                
                 bool i = exist_drw(pth);
 
                     if (!i)
                     {
-
-                        no_draws.Add(pth);
-
+                        if (!no_draws.Contains(pth))
+                        {
+                            no_draws.Add(pth);
+                        }
                     }
                     else
                     {
 
+                        draws.Add(pth.Remove(pth.Length - 3, 3) + "DRW");
                         save_pdf(pth, save_path);
-                        ///Debug.Print("- Save pdf: " + pth);
-
+                        Debug.Print("- Save pdf: " + pth);
+                        
                     }
 
                 
@@ -176,7 +180,7 @@ namespace project
             swModel = (ModelDoc2)swApp.OpenDoc6(pt.Remove(pt.Length - 3, 3) + "DRW", (int)swDocumentTypes_e.swDocDRAWING, (int)swOpenDocOptions_e.swOpenDocOptions_Silent, "", ref errors, ref warnings);
 
             string ss = swModel.GetTitle();
-            Debug.Print("-" + ss);
+            //Debug.Print("-" + ss);
 
             swModExt = (ModelDocExtension)swModel.Extension;
             swExportPDFData = (ExportPdfData)swApp.GetExportFileData((int)swExportDataFileType_e.swExportPdfData);
@@ -252,6 +256,7 @@ namespace project
             begin_msg.Add("Project open: " + swModel.GetPathName());
             
             draws.Add(swModel.GetPathName());
+            
 
             string pp = swModel.GetPathName();
 
@@ -285,6 +290,9 @@ namespace project
             {
                 Debug.Print("+++" + dr2);
             }
+
+            end_msg.Add("Unique details: " + draws.Count.ToString() + " pcs.");
+            end_msg.Add("No drawings for: " + no_draws.Count.ToString() + " pcs.");
 
             Debug.Print("Уникальных деталей: "+draws.Count.ToString());
             Debug.Print("Нет чертежей на: " + no_draws.Count.ToString() + " шт.");
